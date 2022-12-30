@@ -8,17 +8,19 @@ import { NextFunction } from 'connect';
 
 import * as EmailValidator from 'email-validator';
 import { config } from '../../../../config/config';
+import { bool } from 'aws-sdk/clients/signer';
 
 const router: Router = Router();
 
 async function generatePassword(plainTextPassword: string): Promise<string> {
-    //@TODO Use Bcrypt to Generated Salted Hashed Passwords
-    return "NotYetImplemented"
+    const saltReound = 10;
+    const salt:string = await bcrypt.genSalt(saltReound);
+    const hashPassword = await bcrypt.hash(plainTextPassword,salt);
+    return hashPassword;
 }
 
 async function comparePasswords(plainTextPassword: string, hash: string): Promise<boolean> {
-    //@TODO Use Bcrypt to Compare your password to your Salted Hashed Password
-    return true
+    return await bcrypt.compare(plainTextPassword, hash); 
 }
 
 function generateJWT(user: User): string {
